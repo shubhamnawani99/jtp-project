@@ -8,13 +8,50 @@
 {% block content %}
 <form method="post">
 
-    <select name="fruits">
-        {% for post in posts %}
-        <option value="{{ post['title'] }}">{{ post['title'] }}</option>
+    <select name="book-choice">
+        {% for book in books %}
+        <option value="{{ book['title'] }}">{{ book['title'] }}</option>
         {% endfor %}
     </select>
-    <input type="submit" value="Save">
+    <select min="1" max="5" value="3" name="book-rating" required>
+        {% for num in range(1,6) %}
+        <option value="{{ num }}">{{ num }}</option>
+        {% endfor %}
+    </select>
+    {% if length < 5 %}
+    <input name="select-form" type="submit" value="Select">
+    {% else %}
+    <input name="select-form" type="submit" value="Select" disabled>
+    {% endif %}
 
 </form>
+
+{% if current_list %}
+<div class="container">
+    <table>
+        <thead>
+        <th>Book Selected</th>
+        <th>Rating given</th>
+        </thead>
+        <tbody>
+        {% for book, rating in current_list.items() %}
+        <tr>
+            <td>{{ book }}</td>
+            <td>{{ rating }}</td>
+            <td></td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+
+{% if length >= 5 %}
+<div>
+    <form method="post">
+        <input name="process-form" type="submit" value="Recommend me books!">
+    </form>
+</div>
+{% endif %}
 
 {% endblock %}

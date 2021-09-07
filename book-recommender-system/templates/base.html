@@ -1,10 +1,10 @@
 <!doctype html>
-<title>{% block title %}{% endblock %} - Book Recommendation System</title>
-<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<title>Book Recommendation System</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 <nav>
   <h1>Book Recommendation System</h1>
   <ul>
-      <li><a href="{{ url_for('hello') }}">Log Out</a>
+      <li><a href="{{ url_for('recommendation.index') }}">Home</a>
   </ul>
 </nav>
 <section class="content">
