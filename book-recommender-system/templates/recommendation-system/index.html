@@ -1,8 +1,8 @@
 {% extends 'base.html' %}
 
 {% block header %}
-<h1>{% block title %}Posts{% endblock %}</h1>
-<a class="action" href="{{ url_for('recommendation.create') }}">Create</a>
+<h1>{% block title %}Select 5 books and ratings to get started{% endblock %}</h1>
+
 {% endblock %}
 
 {% block content %}
@@ -13,7 +13,7 @@
         <option value="{{ book['title'] }}">{{ book['title'] }}</option>
         {% endfor %}
     </select>
-    <select min="1" max="5" value="3" name="book-rating" required>
+    <select name="book-rating" required>
         {% for num in range(1,6) %}
         <option value="{{ num }}">{{ num }}</option>
         {% endfor %}
@@ -38,7 +38,11 @@
         <tr>
             <td>{{ book }}</td>
             <td>{{ rating }}</td>
-            <td></td>
+            <td>
+                <form method="post" action = "{{ url_for('controller.delete') }}" >
+                    <button name="del-item" type="submit" value="{{ book }}">Delete</button>
+                </form>
+            </td>
         </tr>
         {% endfor %}
         </tbody>
@@ -53,5 +57,9 @@
     </form>
 </div>
 {% endif %}
+
+<div>
+    <a href="{{ url_for('controller.clear_selections') }}" value="Reset all values">Reset all values</a>
+</div>
 
 {% endblock %}

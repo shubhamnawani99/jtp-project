@@ -5,7 +5,7 @@ from flask import (
 from .db import get_db
 from .recommender import main
 
-bp = Blueprint('recommendation', __name__)
+bp = Blueprint('controller', __name__)
 
 current_list = dict()
 
@@ -27,8 +27,9 @@ def index():
         # process the form
         elif 'process-form' in request.form:
 
+            # clear the dictionary
             result = main(current_list)
-            current_list.clear()
+            clear_selections()
 
             return render_template('recommendation-system/process.html', result=result)
 
@@ -41,23 +42,22 @@ def index():
     length = len(current_list) | 0
 
     # render the index template
-    return render_template('recommendation-system/index.html', books=books, current_list=current_list,length=length)
+    return render_template('recommendation-system/index.html', books=books, current_list=current_list, length=length)
 
 
-@bp.route('/create', methods=('GET', 'POST'))
-def create():
-    if request.method == 'POST':
-        title = request.form['title']
-        body = request.form['body']
-        error = None
+# Clear all selections both book titles and ratings
+@bp.route('/clear', methods=('GET', 'POST'))
+def clear_selections():
+    current_list.clear()
+    return redirect(url_for('controller.index'))
 
-        if not title:
-            error = 'Title is required.'
 
-        if error is not None:
-            flash(error)
-        else:
-            # the call to recommender system goes here...
-            return redirect(url_for('recommendation.index'))
-
-    return render_template('recommendation-system/create.html')
+# Delete a particular selection
+@bp.route('/delete', methods=('GET', 'POST'))
+def delete():
+    # get the book name
+    key = request.form.get('del-item')
+    # delete the book title (key) and the corresponding rating from the dictionary
+    current_list.pop(key)
+    # return to the homepage
+    return redirect(url_for('controller.index'))
