@@ -1,2 +1,4 @@
 /venv/
-/book-recommender-system/instance/
+/.idea/
+/utilities/
+/instance/

@@ -2,13 +2,14 @@ import os
 from flask import Flask
 
 
-# boiler plate code from Flask docs
+# "__init__.py" identifies book-recommender-system as package
+# Application factory created for scaling
 def create_app(test_config=None):
     # create and configure the app
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_mapping(
         SECRET_KEY='dev',
-        DATABASE=os.path.join(app.instance_path, 'flaskr.sqlite'),
+        DATABASE=os.path.join(app.instance_path, 'book-RecSys.db'),
     )
 
     if test_config is None:
@@ -31,5 +32,9 @@ def create_app(test_config=None):
 
     from . import db
     db.init_app(app)
+
+    from . import controller
+    app.register_blueprint(controller.bp)
+    app.add_url_rule('/', endpoint='index')
 
     return app
