@@ -6,6 +6,9 @@ from .db import get_db
 
 
 def user_colab(user, ratings_df, books_df):
+
+    print(user, type(user))
+
     # Create dataframe for new user (me)
     user = pd.DataFrame(columns=['title', 'rating'], data=user.items())
 

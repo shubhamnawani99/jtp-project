@@ -1,0 +1,4 @@
+FLASK_APP=book-recommender-system
+FLASK_RUN_HOST=localhost
+FLASK_RUN_PORT=9000
+FLASK_ENV=development

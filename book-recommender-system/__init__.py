@@ -37,5 +37,6 @@ def create_app(test_config=None):
     from . import controller
     app.register_blueprint(controller.bp)
     app.add_url_rule('/', endpoint='index')
+    app.add_url_rule('/process', endpoint='process')
 
     return app

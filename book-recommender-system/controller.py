@@ -7,12 +7,17 @@ from .recommender import main
 
 bp = Blueprint('controller', __name__)
 
-current_list = dict()
+# current_list = dict()
+# testing list
+current_list = {'The Hunger Games (The Hunger Games, #1)': 1,
+                "Harry Potter and the Sorcerer's Stone (Harry Potter, #1)": 2, 'To Kill a Mockingbird': 3,
+                'The Fault in Our Stars': 1, 'The Hobbit': 5}
 
 
 # end point "index" as defined using add_url_rule in __init__
 @bp.route('/', methods=('GET', 'POST'))
 def index():
+    print(current_list)
     if request.method == 'POST':
 
         # fill the current dictionary with book title and ratings
@@ -29,14 +34,14 @@ def index():
 
             # clear the dictionary
             result = main(current_list)
-            clear_selections()
+            current_list.clear()
 
             return render_template('recommendation-system/process.html', result=result)
 
     # load the book list into the select input from the database
     db = get_db()
     books = db.execute(
-        'SELECT book_id, authors, title from books limit 10'
+        'SELECT book_id, authors, title, image_url from books limit 10'
     ).fetchall()
 
     length = len(current_list) | 0
@@ -46,14 +51,14 @@ def index():
 
 
 # Clear all selections both book titles and ratings
-@bp.route('/clear', methods=('GET', 'POST'))
+@bp.route('/clear')
 def clear_selections():
     current_list.clear()
     return redirect(url_for('controller.index'))
 
 
 # Delete a particular selection
-@bp.route('/delete', methods=('GET', 'POST'))
+@bp.route('/delete', methods=['POST'])
 def delete():
     # get the book name
     key = request.form.get('del-item')
@@ -61,3 +66,4 @@ def delete():
     current_list.pop(key)
     # return to the homepage
     return redirect(url_for('controller.index'))
+
