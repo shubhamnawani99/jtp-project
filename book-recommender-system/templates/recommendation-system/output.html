@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block header %}
+<header class="fluid-container">
+    <h3 class="pt-4 pb-2 text-center">These are the top 10 user-recommended selections!</h3>
+</header>
+{% endblock %}
+
+
+{% block content %}
+<div class="container">
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>Authors</th>
+            <th>Title</th>
+            <th>Know More!</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for recommendation in result %}
+        <tr>
+            <td class="container col-4">{{ recommendation['authors'] }}</td>
+            <td class="container col-6">{{ recommendation['title'] }}</td>
+            <!-- External links-->
+            <td>
+                <a class="btn btn-success mb-1 btn-sm" target="_blank"
+                   href="https://www.goodreads.com/search?q={{ recommendation['title'] }}">Goodreads</a>
+                <a class="btn btn-dark mb-1 btn-sm" target="_blank"
+                   href="https://www.amazon.com/s?k={{ recommendation['title'] }}&i=digital-text">Amazon</a>
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+</div>
+{% endblock %}

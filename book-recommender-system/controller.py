@@ -34,9 +34,9 @@ def index():
 
             # clear the dictionary
             result = main(current_list)
-            current_list.clear()
+            # current_list.clear()
 
-            return render_template('recommendation-system/process.html', result=result)
+            return render_template('recommendation-system/output.html', result=result)
 
     # load the book list into the select input from the database
     db = get_db()
@@ -53,7 +53,7 @@ def index():
 # Clear all selections both book titles and ratings
 @bp.route('/clear')
 def clear_selections():
-    current_list.clear()
+    # current_list.clear()
     return redirect(url_for('controller.index'))
 
 
