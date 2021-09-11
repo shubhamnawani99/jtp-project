@@ -5,9 +5,7 @@ from scipy.stats import pearsonr
 from .db import get_db
 
 
-def user_colab(user, ratings_df, books_df):
-
-    print(user, type(user))
+def collaborative_filtering(user, ratings_df, books_df):
 
     # Create dataframe for new user (me)
     user = pd.DataFrame(columns=['title', 'rating'], data=user.items())
@@ -16,11 +14,13 @@ def user_colab(user, ratings_df, books_df):
     new_user = pd.merge(user, books_df, on='title', how='inner')
     new_user = new_user[['book_id', 'title', 'rating']].sort_values(by='book_id')
 
+    # calculate the ratings of other users that have read the same books as me
     other_users = ratings_df[ratings_df['book_id'].isin(new_user['book_id'].values)]
 
     other_users['user_id'].nunique()
 
     # Sort users by count of most mutual books with me
+    # The higher the user in the table, the more mutual books I have with that user
     users_mutual_books = other_users.groupby(['user_id'])
     users_mutual_books = sorted(users_mutual_books, key=lambda x: len(x[1]), reverse=True)
 
@@ -50,6 +50,8 @@ def user_colab(user, ratings_df, books_df):
     users_rating['weighted_rating'] = users_rating['rating'] * users_rating['similarity_index']
 
     # Calculate sum of similarity index and weighted rating for each book
+    # higher the sum of weighted ratings => more users have read the same book
+    # higher the sum of similarity index => number of users that have read and liked the book as much as you
     grouped_ratings = users_rating.groupby('book_id').sum()[['similarity_index', 'weighted_rating']]
 
     recommend_books = pd.DataFrame()
@@ -69,7 +71,7 @@ def user_colab(user, ratings_df, books_df):
     return recommendation.to_dict('records')
 
 
-def main(user_info):
+def main(user_selections):
     # get the database instance
     db = get_db()
 
@@ -78,11 +80,12 @@ def main(user_info):
     ratings_df = pd.read_sql_query("SELECT * FROM ratings", db)
 
     # run the recommendation system
-    recommendation = user_colab(user_info, ratings_df, books_df)
+    recommendation = collaborative_filtering(user_selections, ratings_df, books_df)
 
     # return the recommendations
     return recommendation
 
 
+# Main driver
 if __name__ == "__main__":
     main()

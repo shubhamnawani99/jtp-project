@@ -1,5 +1,10 @@
 import os
-from flask import Flask
+from flask import Flask, render_template
+
+
+# custom error page
+def page_not_found(e):
+    return render_template('404.html'), 404
 
 
 # "__init__.py" identifies book-recommender-system as package
@@ -12,6 +17,7 @@ def create_app(test_config=None):
         # define your database here
         DATABASE=os.path.join(app.instance_path, 'book-RecSys.db'),
     )
+    app.register_error_handler(404, page_not_found)
 
     if test_config is None:
         # load the instance config, if it exists, when not testing
