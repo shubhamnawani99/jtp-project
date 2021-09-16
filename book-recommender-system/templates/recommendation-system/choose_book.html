@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+{% block header %}
+<h1 class="text-center mt-3 mb-3">
+    Here are the search results!
+</h1>
+{% endblock %}
+
+<!--Select form -->
+{% block content %}
+<div class="container row mb-3">
+    <form method="post" class="container row" action="{{ url_for('controller.index') }}">
+        <div class="container col-lg-8 mt-3">
+            <p class="text-center"><b>Book Title</b></p>
+            <select id="book-choice" name="book-choice" class="form-select">
+                {% for book in books %}
+                <option id="{{ book['book_id'] }}" value="{{ book['title'] }}" data-img-url="{{ book['image_url'] }}">
+                    {{ book['title'] }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="container col-lg-1 mt-3">
+            <p class="text-center"><b>Rating</b></p>
+            <select name="book-rating" class="form-select" required>
+                {% for num in range(1,6) %}
+                <option value="{{ num }}">{{ num }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col">
+            <div class="pt-4"></div>
+            <input class="btn btn-dark col-6 offset-3 mt-4 pt-2  pb-2" name="select-form" type="submit" value="Select">
+        </div>
+    </form>
+</div>
+<!--Select form ends here-->
+
+<div class="container row">
+    <figure class="container col-4 text-center mt-3" >
+        <img class="book-cover img-fluid"/>
+        <figcaption>Cover art</figcaption>
+    </figure>
+</div>
+
+
+<!-- JS to select book cover art based on option selected -->
+<script>
+    var e = document.getElementById("book-choice");
+    function show(){
+        var value = e.options[e.selectedIndex].id;
+        var image_url = e.options[e.selectedIndex].getAttribute('data-img-url');
+        document.getElementsByClassName("book-cover")[0].id = value;
+        document.getElementsByClassName("book-cover")[0].src = image_url;
+    }
+    e.onchange=show;
+    show();
+</script>
+{% endblock %}

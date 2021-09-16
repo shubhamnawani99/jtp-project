@@ -16,7 +16,9 @@ def create_app(test_config=None):
         SECRET_KEY='dev',
         # define your database here
         DATABASE=os.path.join(app.instance_path, 'book-RecSys.db'),
+        SEARCH_URL='https://yandex.com/images/search',
     )
+
     app.register_error_handler(404, page_not_found)
 
     if test_config is None:
@@ -29,6 +31,11 @@ def create_app(test_config=None):
     # ensure the instance folder exists
     try:
         os.makedirs(app.instance_path)
+    except OSError:
+        pass
+
+    try:
+        os.makedirs(os.path.join(app.instance_path, 'htmlfi'))
     except OSError:
         pass
 

@@ -2,9 +2,11 @@
 from flask import (
     Blueprint, redirect, render_template, request, url_for
 )
+
 from .db import get_db
 from .recommender import main
 from .user_selections import UserSelection
+from .reverse_search_engine import get_url, get_keywords_from_img, get_book_title_from_keywords
 
 # register the blueprint name
 bp = Blueprint('controller', __name__)
@@ -27,12 +29,10 @@ def index():
 
         # process the form
         elif 'process-form' in request.form:
-
             # send user selections to the recommender system and get recommendations
             result = main(user_selection.get_user_selection())
             # clear the selections
             user_selection.clear_selections()
-
             return render_template('recommendation-system/output.html', result=result)
 
     # load the book list into the "select input" from the database
@@ -63,3 +63,21 @@ def delete():
     user_selection.del_selection(key)
     # return to the homepage
     return redirect(url_for('controller.index'))
+
+
+@bp.route('/image_recognition', methods=['GET', 'POST'])
+def image_recognition():
+    if request.method == "POST":
+        # get the uploaded file
+        f = request.files['file']
+        # get the URL for the reverse search result
+        response = get_url(f)
+        # get the keywords from the image
+        keywords = get_keywords_from_img(response)
+
+        # get the book details
+        # keywords = ['k.', 'd.', 'garri', 'roling', 'rosmen', 'kniga', 'potter', "kamen'", 'oblozhki', 'filosofskij']
+        details = get_book_title_from_keywords(keywords)
+        return render_template('recommendation-system/choose_book.html', books=details)
+
+    return render_template('recommendation-system/image_rec.html')
