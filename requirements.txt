@@ -1,0 +1,8 @@
+flask
+pandas
+scipy
+python-dotenv
+requests
+beautifulsoup4
+nltk
+transliterate

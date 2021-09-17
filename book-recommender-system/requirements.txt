@@ -1,9 +1,0 @@
-flask
-scipy
-numpy
-pandas
-sklearn
-python-dotenv
-requests
-beautifulsoup4
-nltk
