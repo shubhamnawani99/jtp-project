@@ -1,6 +1,6 @@
 # import the necessary libraries and methods
 from flask import (
-    Blueprint, redirect, render_template, request, url_for
+    Blueprint, redirect, render_template, request, url_for, flash, current_app
 )
 
 from .db import get_db
@@ -30,15 +30,15 @@ def index():
         # process the form
         elif 'process-form' in request.form:
             # send user selections to the recommender system and get recommendations
-            result = main(user_selection.get_user_selection())
+            user, filtered = main(user_selection.get_user_selection())
             # clear the selections
-            user_selection.clear_selections()
-            return render_template('recommendation-system/output.html', result=result)
+            # user_selection.clear_selections()
+            return render_template('recommendation-system/output.html', user_result=user, filter_result=filtered)
 
     # load the book list into the "select input" from the database
     db = get_db()
     books = db.execute(
-        'SELECT book_id, authors, title, image_url from books limit 10'
+        'SELECT distinct book_id, authors, title, image_url from books limit 10'
     ).fetchall()
 
     # render the index template
@@ -65,19 +65,33 @@ def delete():
     return redirect(url_for('controller.index'))
 
 
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in current_app.config['ALLOWED_EXTENSIONS']
+
+
 @bp.route('/image_recognition', methods=['GET', 'POST'])
 def image_recognition():
     if request.method == "POST":
+        if 'file' not in request.files:
+            flash('No file part')
+            return redirect(request.url)
         # get the uploaded file
         f = request.files['file']
+        # if user does not select file, browser also
+        # submits an empty part without filename
+        if f.filename == '':
+            flash('No selected file')
+            return redirect(request.url)
         # get the URL for the reverse search result
-        response = get_url(f)
-        # get the keywords from the image
-        keywords = get_keywords_from_img(response)
+        if f and allowed_file(f.filename):
+            response = get_url(f)
+            # get the keywords from the image
+            keywords = get_keywords_from_img(response)
 
-        # get the book details
-        # keywords = ['k.', 'd.', 'garri', 'roling', 'rosmen', 'kniga', 'potter', "kamen'", 'oblozhki', 'filosofskij']
-        details = get_book_title_from_keywords(keywords)
-        return render_template('recommendation-system/choose_book.html', books=details)
-
+            # get the book details
+            # keywords = ['k.', 'd.', 'garri', 'roling', 'rosmen', 'kniga', 'potter', "kamen'", 'oblozhki']
+            details = get_book_title_from_keywords(keywords)
+            return render_template('recommendation-system/choose_book.html', books=details)
+        flash('Invalid file-extension')
     return render_template('recommendation-system/image_rec.html')

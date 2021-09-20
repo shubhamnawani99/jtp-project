@@ -17,6 +17,7 @@ def create_app(test_config=None):
         # define your database here
         DATABASE=os.path.join(app.instance_path, 'book-RecSys.db'),
         SEARCH_URL='https://yandex.com/images/search',
+        ALLOWED_EXTENSIONS={'png', 'jpg', 'jpeg', 'gif'},
     )
 
     app.register_error_handler(404, page_not_found)

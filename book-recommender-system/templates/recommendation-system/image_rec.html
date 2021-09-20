@@ -4,8 +4,8 @@
 {% block content %}
 <div class="container mt-5 text-center">
     <form method="post" action="{{ url_for('controller.image_recognition') }}" enctype="multipart/form-data">
-        <p><input type="file" name="file" id="input-file"></p>
+        <p><input type="file" name="file" id="input-file" accept="image/*"></p>
         <button name="search-btn" id="search-btn" class="btn btn-dark">Reverse Search!</button>
     </form>
 </div>
-{% endblock %}a
+{% endblock %}
