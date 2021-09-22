@@ -53,20 +53,22 @@ def get_recommendations_from_score(grouped_ratings: pd.DataFrame) -> pd.DataFram
 
 
 def get_recommendations(books_df, result_df, recommend_books):
+    # get the general overall user-recommendations
+    user_recommendation = books_df[books_df['book_id'].isin(recommend_books['book_id'])][['authors', 'title']].sample(
+        min(len(recommend_books), 10)).to_dict('records')
+
     # get the list of all the genre generated
     genre_chosen = result_df.groupby(by='tag_name').size().sort_values()[-3:].reset_index()['tag_name'].to_list()
-    print(genre_chosen[0])
 
-    limit = min(10, len(result_df))
-
-    # Top Recommendations for each genre
     filtered_recommendations = []
-    for i in range(3):
-        filtered_df = result_df[result_df['tag_name'] == genre_chosen[i]].sample(limit).to_dict('records')
-        filtered_recommendations.append(filtered_df)
+    if len(genre_chosen) == 3:
+        # set the result limit
+        limit = min(10, len(result_df))
 
-    user_recommendation = books_df[books_df['book_id'].isin(recommend_books['book_id'])][['authors', 'title']].sample(
-        10).to_dict('records')
+        # Top Recommendations for each top-3 genre
+        for i in range(3):
+            filtered_df = result_df[result_df['tag_name'] == genre_chosen[i]].sample(limit).to_dict('records')
+            filtered_recommendations.append(filtered_df)
 
     return user_recommendation, filtered_recommendations
 
@@ -114,6 +116,15 @@ def collaborative_filtering(user, ratings_df, books_df, books_df_with_genres):
     return get_recommendations(books_df=books_df, result_df=result_df, recommend_books=recommend_books)
 
 
+def check_ratings(user_selections):
+    temp = user_selections
+    ratings_len = len(set(user_selections.values()))
+    if ratings_len == 1:
+        for title in temp.keys():
+            user_selections[title] = (len(title) % 5) + 1
+    return user_selections
+
+
 def main(user_selections: dict):
     # get the database instance
     db = get_db()
@@ -122,6 +133,11 @@ def main(user_selections: dict):
     books_df = pd.read_sql_query("SELECT * FROM books", db)
     ratings_df = pd.read_sql_query("SELECT * FROM ratings", db)
     books_df_with_genres = pd.read_sql_query("SELECT * FROM books_with_genres", db)
+
+    # check for same ratings
+    user_selections = check_ratings(user_selections)
+
+    print(user_selections)
 
     # run the recommendation system
     user_recommendation, filtered_recommendations = collaborative_filtering(user_selections, ratings_df, books_df,
