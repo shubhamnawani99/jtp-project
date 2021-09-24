@@ -1,6 +1,6 @@
 # import the necessary libraries and methods
 from flask import (
-    Blueprint, redirect, render_template, request, url_for, flash, current_app
+    Blueprint, redirect, render_template, request, url_for, flash, current_app,
 )
 
 from .db import get_db
@@ -16,6 +16,16 @@ bp = Blueprint('controller', __name__)
 user_selection = UserSelection()
 
 
+@bp.app_template_global()
+def selection_limit() -> bool:
+    return user_selection.get_length() < current_app.config['USER_SELECTION_LIMIT']
+
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in current_app.config['ALLOWED_EXTENSIONS']
+
+
 # end point "index" as defined using add_url_rule in __init__
 @bp.route('/', methods=('GET', 'POST'))
 def index():
@@ -29,16 +39,17 @@ def index():
 
         # process the form
         elif 'process-form' in request.form:
-            # send user selections to the recommender system and get recommendations
-            user, filtered = main(user_selection.get_user_selection())
-            # clear the selections
-            # user_selection.clear_selections()
-            return render_template('recommendation-system/output.html', user_result=user, filter_result=filtered)
+            if user_selection.not_null():
+                # send user selections to the recommender system and get recommendations
+                user, filtered = main(user_selection.get_user_selection())
+                # clear the selections
+                user_selection.clear_selections()
+                return render_template('recommendation-system/output.html', user_result=user, filter_result=filtered)
 
     # load the book list into the "select input" from the database
     db = get_db()
     books = db.execute(
-        'SELECT distinct book_id, authors, title, image_url from books limit 10'
+        'SELECT distinct book_id, authors, title, image_url from books limit 2500'
     ).fetchall()
 
     # render the index template
@@ -65,11 +76,6 @@ def delete():
     return redirect(url_for('controller.index'))
 
 
-def allowed_file(filename):
-    return '.' in filename and \
-           filename.rsplit('.', 1)[1].lower() in current_app.config['ALLOWED_EXTENSIONS']
-
-
 @bp.route('/image_recognition', methods=['GET', 'POST'])
 def image_recognition():
     if request.method == "POST":
@@ -83,15 +89,20 @@ def image_recognition():
         if f.filename == '':
             flash('No selected file')
             return redirect(request.url)
-        # get the URL for the reverse search result
+        # if file is correct
         if f and allowed_file(f.filename):
-            response = get_url(f)
-            # get the keywords from the image
-            keywords = get_keywords_from_img(response)
-
+            # get the URL for the reverse search result
+            # response = get_url(f)
+            # # get the keywords from the image
+            # keywords = get_keywords_from_img(response)
             # get the book details
-            # keywords = ['k.', 'd.', 'garri', 'roling', 'rosmen', 'kniga', 'potter', "kamen'", 'oblozhki']
+            keywords = ['harry', 'potter', 'great', 'gatsby']
             details = get_book_title_from_keywords(keywords)
             return render_template('recommendation-system/choose_book.html', books=details)
         flash('Invalid file-extension')
+
+    # return to homepage if the user selection is completed
+    if user_selection.get_length() == 5:
+        return redirect(url_for('controller.index'))
+
     return render_template('recommendation-system/image_rec.html')

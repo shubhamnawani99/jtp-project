@@ -1,0 +1,41 @@
+<!--Select form -->
+{% block content %}
+{% if selection_limit() %}
+<div class="container row mb-3">
+    <form method="post" class="container row">
+        <table class="table table-borderless">
+            <thead>
+            <th class="text-center">Book Title</th>
+            <th class="text-center">Rating</th>
+            <th></th>
+            </thead>
+            <tbody>
+            <tr>
+                <td class="w-75">
+                    <select id="book-choice" name="book-choice" class="js-example-basic-single" style="width: 100%;">
+                        {% for book in books %}
+                        <option id="{{ book['book_id'] }}" value="{{ book['title'] }}"
+                                data-img-url="{{ book['image_url'] }}">
+                            {{ book['title'] }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </td>
+                <td>
+                    <select name="book-rating" class="form-select form-select-sm" required>
+                        {% for num in range(1,6) %}
+                        <option value="{{ num }}">{{ num }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+                <td>
+                    <input class="btn btn-dark btn-sm px-4" name="select-form" type="submit" value="Select">
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </form>
+</div>
+{% endif %}
+{% endblock %}
+<!--Select form ends here-->

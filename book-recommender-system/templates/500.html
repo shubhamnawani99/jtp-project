@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}Oops{% endblock %}
+{% block content %}
+<div class="text-center">
+    <h1 class="display-1">Oops! Something wrong happened</h1>
+    <p>What you were looking for is just not there.</p>
+    <a class="btn btn-dark" href="{{ url_for('controller.index') }}">Head back to homepage</a>
+</div>
+{% endblock %}

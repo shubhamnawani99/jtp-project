@@ -73,7 +73,7 @@ def get_book_title_from_keywords(keywords):
     cur = db.cursor()
     for key in keywords:
         query_word = '%' + key + '%'
-        sql_query = "SELECT book_id, authors, title, image_url FROM books WHERE title LIKE ? LIMIT 2"
+        sql_query = "SELECT book_id, authors, title, image_url FROM books WHERE title LIKE ? LIMIT 5"
         res_ = cur.execute(sql_query, (query_word,)).fetchall()
         for res in res_:
             book_details.add(res)

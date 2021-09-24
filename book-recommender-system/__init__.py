@@ -1,10 +1,19 @@
 import os
 from flask import Flask, render_template
 
+'''
+    Custom error pages
+'''
 
-# custom error page
+
+# page not found error
 def page_not_found(e):
     return render_template('404.html'), 404
+
+
+# internal server error
+def internal_server_error(e):
+    return render_template('500.html'), 500
 
 
 # "__init__.py" identifies book-recommender-system as package
@@ -18,9 +27,12 @@ def create_app(test_config=None):
         DATABASE=os.path.join(app.instance_path, 'book-RecSys.db'),
         SEARCH_URL='https://yandex.com/images/search',
         ALLOWED_EXTENSIONS={'png', 'jpg', 'jpeg', 'gif'},
+        USER_SELECTION_LIMIT=5,
     )
 
+    # register the app handlers
     app.register_error_handler(404, page_not_found)
+    app.register_error_handler(500, internal_server_error)
 
     if test_config is None:
         # load the instance config, if it exists, when not testing
@@ -51,6 +63,5 @@ def create_app(test_config=None):
     from . import controller
     app.register_blueprint(controller.bp)
     app.add_url_rule('/', endpoint='index')
-    app.add_url_rule('/process', endpoint='process')
 
     return app
