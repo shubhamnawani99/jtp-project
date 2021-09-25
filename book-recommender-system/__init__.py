@@ -1,32 +1,47 @@
+""""__init__.py" identifies book-recommender-system as package"""
 import os
+
 from flask import Flask, render_template
 
-'''
-    Custom error pages
-'''
 
-
-# page not found error
 def page_not_found(e):
+    """Custom page not found error
+
+    This method gets triggered whenever a user tries to access a page that does not exist on the server. For example:
+    http://localhost:5000/this-page-does-not-exist
+
+    :return 404.html: Page not found custom HTML page
+    """
     return render_template('404.html'), 404
 
 
-# internal server error
 def internal_server_error(e):
+    """Custom internal server error error
+
+     This method gets triggered whenever an internal server error occurs
+
+     :return 500.html: Internal server error custom HTML page
+     """
     return render_template('500.html'), 500
 
 
-# "__init__.py" identifies book-recommender-system as package
-# Application factory created for scaling
 def create_app(test_config=None):
+    """Application factory created for scaling. Create a flask app instance
+
+    :param test_config: configuration if testing is done
+    :return: flask app instance
+    """
     # create and configure the app
     app = Flask(__name__, instance_relative_config=True)
+    # app configurations goes here
     app.config.from_mapping(
         SECRET_KEY='dev',
         # define your database here
         DATABASE=os.path.join(app.instance_path, 'book-RecSys.db'),
+        # search URL goes here
         SEARCH_URL='https://yandex.com/images/search',
         ALLOWED_EXTENSIONS={'png', 'jpg', 'jpeg', 'gif'},
+        # user selection limit goes here
         USER_SELECTION_LIMIT=5,
     )
 
@@ -47,20 +62,18 @@ def create_app(test_config=None):
     except OSError:
         pass
 
+    # ensure the html files folder exists
     try:
         os.makedirs(os.path.join(app.instance_path, 'htmlfi'))
     except OSError:
         pass
 
-    # a simple page that says hello
-    @app.route('/hello')
-    def hello():
-        return 'Hello, World!'
-
     from . import db
+    # initialize the database
     db.init_app(app)
 
     from . import controller
+    # register the controller
     app.register_blueprint(controller.bp)
     app.add_url_rule('/', endpoint='index')
 

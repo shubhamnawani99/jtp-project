@@ -1,12 +1,13 @@
 # import the necessary libraries and methods
+import requests.exceptions
 from flask import (
     Blueprint, redirect, render_template, request, url_for, flash, current_app,
 )
 
 from .db import get_db
-from .recommender import main
-from .user_selections import UserSelection
+from .recommender import book_recommender_system
 from .reverse_search_engine import get_url, get_keywords_from_img, get_book_title_from_keywords
+from .user_selections import UserSelection
 
 # register the blueprint name
 bp = Blueprint('controller', __name__)
@@ -36,12 +37,16 @@ def index():
             book_selected = request.form.get("book-choice")
             rating_selected = request.form.get("book-rating")
             user_selection.set_user_selection(book_title=book_selected, book_rating=rating_selected)
-
+            print(book_selected)
         # process the form
         elif 'process-form' in request.form:
             if user_selection.not_null():
                 # send user selections to the recommender system and get recommendations
-                user, filtered = main(user_selection.get_user_selection())
+                user, filtered = book_recommender_system(user_selection.get_user_selection())
+                if len(user) == 0:
+                    flash('Sorry we have no recommendation for the user selections in our database. \
+                    Please try again with other books and ratings')
+                    return redirect(request.url)
                 # clear the selections
                 user_selection.clear_selections()
                 return render_template('recommendation-system/output.html', user_result=user, filter_result=filtered)
@@ -92,17 +97,24 @@ def image_recognition():
         # if file is correct
         if f and allowed_file(f.filename):
             # get the URL for the reverse search result
-            # response = get_url(f)
-            # # get the keywords from the image
-            # keywords = get_keywords_from_img(response)
-            # get the book details
-            keywords = ['harry', 'potter', 'great', 'gatsby']
-            details = get_book_title_from_keywords(keywords)
-            return render_template('recommendation-system/choose_book.html', books=details)
+            try:
+                response = get_url(f)
+                # get the keywords from the image
+                keywords = get_keywords_from_img(response)
+                # get the book details
+                details = get_book_title_from_keywords(keywords)
+                if len(details) == 0:
+                    flash('No titles available for the given image. Please try with a different book cover')
+                    return redirect(request.url)
+                return render_template('recommendation-system/choose_book.html', books=details)
+            except requests.exceptions.ConnectionError:
+                flash('The reverse image service has reached the query limit')
+                return redirect(request.url)
+
         flash('Invalid file-extension')
 
-    # return to homepage if the user selection is completed
-    if user_selection.get_length() == 5:
+    # deny access to image recognition if the user has selected all 5 books
+    if user_selection.get_length() >= 5:
         return redirect(url_for('controller.index'))
 
     return render_template('recommendation-system/image_rec.html')

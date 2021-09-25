@@ -1,9 +1,13 @@
+"""Database module to set up the database"""
 import sqlite3
 
 from flask import current_app, g
 
 
 def get_db():
+    """
+    :return: the database instance
+    """
     if 'db' not in g:
         g.db = sqlite3.connect(
             current_app.config['DATABASE'],
@@ -14,7 +18,8 @@ def get_db():
     return g.db
 
 
-def close_db(e=None):
+def close_db(e):
+    """Close the database"""
     db = g.pop('db', None)
 
     if db is not None:
@@ -22,6 +27,8 @@ def close_db(e=None):
 
 
 def init_app(app):
-    # tells Flask to call that function when cleaning up after returning the response.
-    app.teardown_appcontext(close_db)
+    """tells Flask to call that function when cleaning up after returning the response.
 
+    :param app: Flask app instance
+    """
+    app.teardown_appcontext(close_db)
