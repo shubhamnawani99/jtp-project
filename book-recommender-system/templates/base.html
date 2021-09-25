@@ -1,4 +1,5 @@
 <!doctype html>
+<html>
 <title>Book Recommendation System</title>
 <head>
     <!-- jQuery -->
@@ -10,6 +11,7 @@
     <!--Bootstrap 5-->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link href="{{url_for('static', filename='styles.css')}}" rel="stylesheet"/>
 </head>
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container-fluid">
@@ -20,13 +22,14 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                {% if selection_limit() %}
                 <li class="nav-item">
-                    <a class="nav-link" aria-current="page" href="{{ url_for('controller.index') }}">Home</a>
+                    <a class="nav-link" href="{{ url_for('controller.index') }}">Home</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" aria-current="page" href="{{ url_for('controller.image_recognition') }}">Find
-                        title by image</a>
+                    <a class="nav-link" href="{{ url_for('controller.image_recognition') }}">Find title by image</a>
                 </li>
+                {% endif %}
             </ul>
         </div>
     </div>
@@ -37,7 +40,9 @@
         {% block header %}{% endblock %}
     </header>
     {% for message in get_flashed_messages() %}
-    <div class="flash">{{ message }}</div>
+    <div class="flash mt-3 text-center w-25 m-auto">{{ message }}</div>
     {% endfor %}
     {% block content %}{% endblock %}
 </section>
+
+</html>

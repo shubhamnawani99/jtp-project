@@ -8,7 +8,13 @@
 
 {% block content %}
 <!--Select form-->
-{% include 'select_form.html' %}
+{% if selection_limit() %}
+<div class="container row mb-3">
+    <form method="post" class="container row" action="{{ url_for('controller.index') }}">
+        {% include "select_form.html" %}
+    </form>
+</div>
+{% endif %}
 <!--Book cover-->
 {% include 'book_cover.html' %}
 <!-- JS to select book cover art based on option selected -->

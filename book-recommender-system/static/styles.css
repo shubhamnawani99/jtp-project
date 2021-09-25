@@ -1,1 +1,8 @@
-body { max-width: 960px; margin: 0 auto; background: wheat; }
+body { max-width: 1920px; margin: 0 auto; background: white; }
+.flash {
+  padding: 12px;
+  border-radius: 5px;-webkit-border-radius: 5px; -moz-border-radius: 5px;
+  font-size: 1.2rem;
+  background-color: red;
+  color: white;
+}

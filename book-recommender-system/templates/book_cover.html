@@ -1,8 +1,8 @@
 {% block content %}
-<div class="container row">
-    <figure class="container col-4 text-center">
-        <img class="book-cover img-fluid"/>
-        <figcaption>Cover art</figcaption>
-    </figure>
-</div>
+{% if selection_limit() %}
+<figure class="container col-4 text-center">
+    <img class="book-cover img-fluid"/>
+    <figcaption><strong>Cover art</strong></figcaption>
+</figure>
+{% endif %}
 {% endblock %}

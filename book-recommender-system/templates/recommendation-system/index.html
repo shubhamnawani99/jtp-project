@@ -12,9 +12,17 @@
 </h1>
 {% endblock %}
 
-
 {% block content %}
-{% include "select_form.html" %}
+
+<!--Select form-->
+{% if selection_limit() %}
+<div class="container row mb-3">
+    <form method="post" class="container row">
+        {% include "select_form.html" %}
+    </form>
+</div>
+{% endif %}
+
 <!-- User selections -->
 <div class="container row">
     {% if current_list %}
@@ -44,15 +52,15 @@
 
         <!--  Process and Reset buttons -->
         <div class="row justify-center mt-3">
-            <!-- Process and run the recsys -->
-            {% if length >= 5 %}
+            <!-- Process and run the Recommender system -->
+            {% if not selection_limit() %}
             <form method="post" class="offset-2 col-4 text-center">
                 <input class="btn btn-success" name="process-form" type="submit" value="Recommend me books!">
             </form>
             {% endif %} <!-- End process button-->
 
             <!-- Reset all chosen values -->
-            {% if length >= 5 %}
+            {% if not selection_limit() %}
             <span class="col-4 text-center">
             {% else %}
                 <span class="offset-3 col-6 text-center">
@@ -62,17 +70,11 @@
             </span>  <!-- End Reset all chosen values -->
             </span>
         </div>
-
     </div>
     {% endif %}
 
-    <!-- Book cover goes here -->
-    {% if selection_limit() %}
-    <figure class="container col-4 text-center mt-3">
-        <img class="book-cover img-fluid"/>
-        <figcaption>Cover art</figcaption>
-    </figure>
-    {% endif %}
+    <!--Book cover-->
+    {% include 'book_cover.html' %}
 </div>
 
 <!-- JS to select book cover art based on option selected -->

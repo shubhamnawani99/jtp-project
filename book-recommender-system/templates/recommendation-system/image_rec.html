@@ -1,11 +1,18 @@
 {% extends 'base.html' %}
-
+{% block header %}
+<h1 class="text-center mt-3 mb-3">
+    Find book by image
+</h1>
+{% endblock %}
 {% block content %}
 <div class="container mt-5 text-center">
     <form method="post" action="{{ url_for('controller.image_recognition') }}" enctype="multipart/form-data">
-        <p><input type="file" name="file" id="input-file" accept="image/*"></p>
-        <button name="search-btn" id="search-btn" class="btn btn-dark">Reverse Search!</button>
+        <div>
+            <input name="file" class="form-control form-control-lg mb-3 w-50 m-auto" id="formFileLg" type="file"
+                   id="input-file"
+                   accept="image/*">
+        </div>
+        <button name="search-btn" id="search-btn" class="btn btn-dark btn-lg">Reverse Search!</button>
     </form>
 </div>
-{% include 'book_cover.html' %}
 {% endblock %}
