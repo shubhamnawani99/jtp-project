@@ -12,6 +12,8 @@ The user can use this table to delete any of the selected books or reset the who
 
 A cover-art for the book (if available) is generated on selecting a book from the drop down menu.
 
+After running, the recommender system provides **_user suggested recommendations_** alongwith **_genre based recommendations_**.
+
 ## Table of Contents 
 
 - [Getting Started](#getting-started)
