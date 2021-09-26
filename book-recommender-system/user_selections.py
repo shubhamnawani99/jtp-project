@@ -4,10 +4,7 @@ class UserSelection:
 
     def __init__(self):
         """Define a user selection for testing purposes"""
-        self.user_selections = {'The Hunger Games (The Hunger Games, #1)': 1,
-                                "Harry Potter and the Sorcerer's Stone (Harry Potter, #1)": 2,
-                                'To Kill a Mockingbird': 3,
-                                'The Fault in Our Stars': 1, 'The Hobbit': 5}
+        self.user_selections = {}
 
     def get_user_selection(self) -> dict:
         """
